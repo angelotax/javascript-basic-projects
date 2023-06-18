@@ -71,11 +71,28 @@ const menu = [
     img: './images/item-9.jpeg',
     desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
   },
+  {
+    id: 10,
+    title: 'steak dinner',
+    category: 'dinner',
+    price: 39.99,
+    img: './images/item-10.jpeg',
+    desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
+  },
 ];
 const sectionCenter = document.querySelector('.section-center');
+// filterbtns
+const buttonContainer = document.querySelector('.btn-container');
 
+// loads dom content first when page loads
 window.addEventListener('DOMContentLoaded', function () {
-  let displayItem = menu.map(function (item) {
+  DisplayMenuItems(menu);
+  DisplayMenuButtons();
+});
+
+// main function - refactors array and displays it in section center
+function DisplayMenuItems(menuItems) {
+  let displayItem = menuItems.map(function (item) {
     return `<article class="menu-item">
           <img src=${item.img} alt=${item.title} class="photo" />
           <div class="item-info">
@@ -91,5 +108,43 @@ window.addEventListener('DOMContentLoaded', function () {
   });
   displayItem = displayItem.join('');
   sectionCenter.innerHTML = displayItem;
-  // console.log(displayItem);
-});
+}
+
+function DisplayMenuButtons() {
+  // reduces the categories displayed to only the unique categories effectively included in the menu items
+  const categories = menu.reduce(
+    function (values, item) {
+      if (!values.includes(item.category)) {
+        values.push(item.category);
+      }
+      return values;
+    },
+    ['all']
+  );
+
+  // category buttons
+  const categoryButtons = categories
+    .map(function (category) {
+      return `<button class="filter-btn" type="button" data-id=${category}>${category}</button>`;
+    })
+    .join('');
+
+  buttonContainer.innerHTML = categoryButtons;
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  // filter items
+  filterButtons.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      const category = e.currentTarget.dataset.id;
+      const menuCategory = menu.filter(function (menuItem) {
+        if (menuItem.category === category) {
+          return menuItem;
+        }
+      });
+      if (category === 'all') {
+        return DisplayMenuItems(menu);
+      } else {
+        DisplayMenuItems(menuCategory);
+      }
+    });
+  });
+}
